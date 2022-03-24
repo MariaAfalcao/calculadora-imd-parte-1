@@ -1,0 +1,114 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(MaterialApp(
+    home: Home(),
+  ));
+}
+
+class Home extends StatefulWidget {
+  const Home({Key? key}) : super(key: key);
+
+  @override
+  _HomeState createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  String infor = "Informe seus dados";
+  TextEditingController pesoController = TextEditingController();
+  TextEditingController alturaController = TextEditingController();
+
+  GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
+  void resetCampos() {
+    setState(() {
+      pesoController.text = "";
+      alturaController.text = "";
+      infor = "Informe seus dados!";
+    });
+  }
+
+  void calcular() {
+    setState(() {
+      double pesoDigitado = double.parse(pesoController.text);
+      double alturaDigitado = double.parse(alturaController.text) / 100;
+      double imc = pesoDigitado / (alturaDigitado * alturaDigitado);
+      if (imc < 18.6) {
+        infor = "Abaixo do peso (${imc.toStringAsPrecision(3)})";
+      } else if (imc >= 18.5 && imc <= 24.9) {
+        infor = "Peso normal(${imc.toStringAsPrecision(3)})";
+      } else if (imc >= 25.0 && imc <= 29.9) {
+        infor = "Sobrepeso(${imc.toStringAsPrecision(3)})";
+      } else if (imc >= 30.0 && imc <= 34.9) {
+        infor = "Obesidade grau 1 (${imc.toStringAsPrecision(3)})";
+      } else {
+        infor = "Obesidade grau 2 (${imc.toStringAsPrecision(3)})";
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    //Dentro do Scaffold AppBar
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Calculadora de IMC"),
+        centerTitle: true,
+        backgroundColor: Colors.green,
+        actions: [
+          IconButton(
+            onPressed: resetCampos,
+            icon: Icon(Icons.refresh),
+          )
+        ],
+      ),
+      //Body
+      backgroundColor: Colors.white,
+      body: Column(
+
+          // crossAxisAlignment: CrossAxisAlignment.stretch, - CENTRALIZA
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const Icon(
+              Icons.person_outline,
+              size: 120.0,
+              color: Colors.green,
+            ),
+            TextFormField(
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                    labelText: "Peso (Kg)",
+                    labelStyle: TextStyle(color: Colors.green)),
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.green, fontSize: 25.0),
+                controller: pesoController,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Insira seu peso";
+                  }
+                }),
+            TextFormField(
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                  labelText: "Altura (cm)",
+                  labelStyle: TextStyle(color: Colors.green)),
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: Colors.green, fontSize: 25.0),
+              controller: alturaController,
+            ),
+            TextButton(
+              style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(Colors.green)),
+              child: const Text("Calcular",
+                  style: TextStyle(color: Colors.white, fontSize: 25.0)),
+              onPressed: calcular,
+            ),
+            Text(
+              infor,
+              style: const TextStyle(color: Colors.green, fontSize: 25.0),
+              textAlign: TextAlign.center,
+            ),
+          ]),
+    );
+  }
+}
